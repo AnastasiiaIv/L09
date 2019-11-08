@@ -1,4 +1,4 @@
-#include "LogSetup.h"
+#include "core/LogSetup.h"
 
 #include <boost/log/sinks.hpp>
 #include <boost/log/utility/setup.hpp>
@@ -27,7 +27,7 @@ void LogSetup::init()
         boost::log::keywords::format = format
     );
     sinkConsole->set_filter(
-        boost::log::trivial::severity >= boost::log::trivial::info
+        boost::log::trivial::severity >= boost::log::trivial::debug
     );      // Log console setup
 
     boost::log::add_common_attributes();

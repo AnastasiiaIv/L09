@@ -1,8 +1,8 @@
 #include <boost/beast.hpp>
 #include <boost/log/trivial.hpp>
 
-#include "Downloader.h"
-#include "RootCertificates.h"
+#include "core/Downloader.h"
+#include "core/RootCertificates.h"
 
 Downloader::Downloader(std::string host, std::string port)
     : _host(std::move(host)),
