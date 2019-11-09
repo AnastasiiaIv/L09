@@ -2,18 +2,20 @@
 
 #include <string>
 #include <fstream>
+#include <queue>
 #include <tuple>
 #include <boost/lockfree/stack.hpp>
+#include <boost/asio/thread_pool.hpp>
 
 #include "core/Parser.h"
 #include "core/Downloader.h"
-#include "core/ThreadPool.h"
 #include "CrawlerData.h"
 #include "Page.h"
 
 struct ThreadData
 {
     using ImageContainer = std::queue<std::string>;
+    using ThreadPool = boost::asio::thread_pool;
 
     Downloader &downloader;
     ThreadPool &downloaders;

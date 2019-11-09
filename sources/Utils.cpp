@@ -1,6 +1,7 @@
 #include <iostream>
 #include <boost/program_options.hpp>
 #include <boost/log/trivial.hpp>
+#include <boost/bind.hpp>
 
 #include "Utils.h"
 #include "CrawlerData.h"
@@ -65,7 +66,10 @@ int programArguments(int argc, char **argv)
 
 void afterParse(const Page &page, ThreadData &data)
 {
-    data.downloaders.enqueue(download, page, std::ref(data));
+    boost::asio::post(data.downloaders,
+                      boost::bind(download,
+                                  page,
+                                  std::ref(data)));
 }
 
 void parse(const PageDownloaded &page, ThreadData &data)
@@ -115,7 +119,10 @@ void parse(const PageDownloaded &page, ThreadData &data)
 
 void afterDownload(const PageDownloaded &page, ThreadData &data)
 {
-    data.parsers.enqueue(parse, page, std::ref(data));
+    boost::asio::post(data.parsers,
+                      boost::bind(parse,
+                                  page,
+                                  std::ref(data)));
 }
 
 void download(const Page &page, ThreadData &data)

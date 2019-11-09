@@ -1,8 +1,7 @@
-#include <string>
-#include <fstream>
 #include <queue>
 
 #include <boost/log/trivial.hpp>
+#include <boost/bind.hpp>
 
 #include "core/LogSetup.h"
 #include "CrawlerData.h"
@@ -11,6 +10,8 @@
 
 int main(int argc, char *argv[])
 {
+    using ThreadPool = ThreadData::ThreadPool;
+
     LogSetup::init();
     BOOST_LOG_TRIVIAL(debug) << "Log setup complete";
 
@@ -40,7 +41,10 @@ int main(int argc, char *argv[])
     };
 
     globalMutex.lock();
-    downloaders.enqueue(download, Page{target, CrawlerData::depth}, std::ref(threadData));
+    boost::asio::post(downloaders,
+                      boost::bind(download,
+                                  Page{target, CrawlerData::depth},
+                                  std::ref(threadData)));
 
     globalMutex.lock();     // And wait until all parsers end
 
