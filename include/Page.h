@@ -1,5 +1,7 @@
 #pragma once
 
+#include "core/Parser.h"
+
 struct Page
 {
     std::string target;

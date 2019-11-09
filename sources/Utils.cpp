@@ -85,24 +85,26 @@ void parse(const PageDownloaded &page, ThreadData &data)
     for (const std::string &image : images) {
         amount++;
         BOOST_LOG_TRIVIAL(debug) << "    Image: " << image;
-        data.imageList.push(image);
-    }
-    BOOST_LOG_TRIVIAL(info) << "Found images: " << amount;
 
+        std::lock_guard<std::mutex> locker(data.containerMutex);
+        data.imageContainer.push(image);
+    }
+    BOOST_LOG_TRIVIAL(info) << "Found images on '" << page.target << "': " << amount;
+
+    data.parserAmount--;
     if (page.depth == 0) {
-        data.parserAmount--;
         BOOST_LOG_TRIVIAL(info) << "Parser amount: " << data.parserAmount;
+
         if (data.parserAmount == 0) {
             data.globalMutex.unlock();
         }
-
         return;
     }
 
-    if (auto size = links.size(); size > 1) {
-        data.parserAmount += size - 1;
-        BOOST_LOG_TRIVIAL(info) << "Parser amount: " << data.parserAmount;
+    if (auto size = links.size(); size > 0) {
+        data.parserAmount += size;
     }
+    BOOST_LOG_TRIVIAL(info) << "Parser amount: " << data.parserAmount;
     BOOST_LOG_TRIVIAL(debug) << "Links: ";
     for (const std::string &link : links) {
         BOOST_LOG_TRIVIAL(debug) << "    Link: " << link;
@@ -127,4 +129,20 @@ void download(const Page &page, ThreadData &data)
     };
 
     afterDownload(result, data);
+}
+
+void containerToFileWithFilter(ThreadData::ImageContainer &container)
+{
+    boost::unordered_set<std::string> uniqueCheck;
+
+    std::ofstream file{CrawlerData::output};
+    while (!container.empty()) {
+        std::string value = container.front();
+        auto pair = uniqueCheck.emplace(value);
+
+        if (pair.second) {
+            file << value << "\n";
+        }
+        container.pop();
+    }
 }

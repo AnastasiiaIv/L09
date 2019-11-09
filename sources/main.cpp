@@ -9,8 +9,6 @@
 #include "Page.h"
 #include "Utils.h"
 
-
-
 int main(int argc, char *argv[])
 {
     LogSetup::init();
@@ -27,7 +25,7 @@ int main(int argc, char *argv[])
     ThreadPool parsers{CrawlerData::parserThreads};
     BOOST_LOG_TRIVIAL(debug) << "Initialized thread pools";
 
-    ThreadData::ImageList imageList;
+    ThreadData::ImageContainer imageContainer;
     std::atomic<size_t> parserAmount{1};
     std::mutex globalMutex;
     Downloader downloader{host, "443"};
@@ -36,7 +34,7 @@ int main(int argc, char *argv[])
         downloader,
         downloaders,
         parsers,
-        imageList,
+        imageContainer,
         globalMutex,
         parserAmount,
     };
@@ -45,7 +43,7 @@ int main(int argc, char *argv[])
     downloaders.enqueue(download, Page{target, CrawlerData::depth}, std::ref(threadData));
 
     globalMutex.lock();     // And wait until all parsers end
-    std::ofstream(CrawlerData::output);
-    imageList.
-    imageList.pop()
+
+    BOOST_LOG_TRIVIAL(info) << "Time to write file..";
+    containerToFileWithFilter(imageContainer);
 }

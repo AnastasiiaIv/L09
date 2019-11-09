@@ -1,24 +1,28 @@
 #pragma once
 
 #include <string>
+#include <fstream>
 #include <tuple>
 #include <boost/lockfree/stack.hpp>
 
 #include "core/Parser.h"
 #include "core/Downloader.h"
 #include "core/ThreadPool.h"
+#include "CrawlerData.h"
 #include "Page.h"
 
 struct ThreadData
 {
-    using ImageList = boost::lockfree::stack<std::string, boost::lockfree::capacity<500>>;
+    using ImageContainer = std::queue<std::string>;
 
     Downloader &downloader;
     ThreadPool &downloaders;
     ThreadPool &parsers;
-    ImageList &imageList;
+    ImageContainer &imageContainer;
     std::mutex &globalMutex;
     std::atomic<size_t> &parserAmount;
+
+    std::mutex containerMutex{};
 };
 
 int programArguments(int argc, char *argv[]);
@@ -33,3 +37,4 @@ void afterDownload(const PageDownloaded &page, ThreadData &data);
 
 void download(const Page &page, ThreadData &data);
 
+void containerToFileWithFilter(ThreadData::ImageContainer &container);
