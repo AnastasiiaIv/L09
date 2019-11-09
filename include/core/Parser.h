@@ -24,6 +24,6 @@ public:
 private:
     static void getLinks(const GumboNode *node, const ParserSearchParams &params, LinkContainer &container);
 
-    std::string _html;
+    std::string html_;
     GumboNode *root;
 };

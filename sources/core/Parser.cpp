@@ -2,8 +2,8 @@
 #include <boost/algorithm/string/classification.hpp>
 
 Parser::Parser(std::string html)
-    : _html(std::move(html)),
-      root(gumbo_parse(_html.c_str())->root)
+    : html_(std::move(html)),
+      root(gumbo_parse(html_.c_str())->root)
 {}
 
 Parser::LinkContainer Parser::getLinks(const ParserSearchParams &params)

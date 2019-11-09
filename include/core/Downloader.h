@@ -25,19 +25,19 @@ public:
 
     [[nodiscard]] std::string getHost() const
     {
-        return _host;
+        return host_;
     }
 
     [[nodiscard]] std::string getPort() const
     {
-        return _port;
+        return port_;
     }
 
     std::string download(const std::string &url, int httpVersion = 10);
 
 private:
-    std::string _host;
-    std::string _port;
+    std::string host_;
+    std::string port_;
 
     IoContext ioContext;
     SslContext sslContext{SslContext::sslv23_client};       // Context for SSL/TLS client
