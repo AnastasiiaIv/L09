@@ -23,6 +23,16 @@ public:
     // connect
     Downloader(std::string host, std::string port);
 
+    [[nodiscard]] std::string getHost() const
+    {
+        return _host;
+    }
+
+    [[nodiscard]] std::string getPort() const
+    {
+        return _port;
+    }
+
     std::string download(const std::string &url, int httpVersion = 10);
 
 private:

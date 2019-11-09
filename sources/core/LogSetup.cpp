@@ -27,7 +27,7 @@ void LogSetup::init()
         boost::log::keywords::format = format
     );
     sinkConsole->set_filter(
-        boost::log::trivial::severity >= boost::log::trivial::debug
+        boost::log::trivial::severity >= boost::log::trivial::info
     );      // Log console setup
 
     boost::log::add_common_attributes();

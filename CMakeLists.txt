@@ -23,20 +23,46 @@ string(APPEND CMAKE_CXX_FLAGS " -Wshadow -Wnon-virtual-dtor")
 
 hunter_add_package(gumbo)
 find_package(gumbo CONFIG REQUIRED)
-hunter_add_package(Boost COMPONENTS program_options)
-find_package(Boost CONFIG REQUIRED program_options)
+hunter_add_package(
+  Boost
+  COMPONENTS
+  program_options
+  thread
+  log
+  filesystem
+)
+find_package(
+  Boost
+  CONFIG REQUIRED
+  program_options
+  thread
+  log
+  log_setup
+  filesystem
+)
+hunter_add_package(OpenSSL)
+find_package(OpenSSL REQUIRED)
 find_package(Threads)
 
 add_executable(
   ${PROJECT_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}/sources/main.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/sources/CrawlerData.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/sources/Utils.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/sources/core/Downloader.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/sources/core/Parser.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/sources/core/LogSetup.cpp
 )
 
 target_link_libraries(
   ${PROJECT_NAME}
   gumbo::gumbo
   Boost::program_options
+  Boost::thread
+  Boost::log
+  Boost::log_setup
+  Boost::filesystem
+  OpenSSL::SSL
 )
 
 target_include_directories(
