@@ -1,6 +1,4 @@
 #include <queue>
-
-#include <boost/log/trivial.hpp>
 #include <boost/bind.hpp>
 
 #include "core/LogSetup.h"
@@ -30,6 +28,7 @@ int main(int argc, char *argv[])
     std::atomic<size_t> parserAmount{1};
     std::mutex globalMutex;
     Downloader downloader{host, "443"};
+    std::ofstream outputFile{CrawlerData::output};
 
     ThreadData threadData{
         downloader,
@@ -38,6 +37,7 @@ int main(int argc, char *argv[])
         imageContainer,
         globalMutex,
         parserAmount,
+        outputFile,
     };
 
     globalMutex.lock();
@@ -48,6 +48,5 @@ int main(int argc, char *argv[])
 
     globalMutex.lock();     // And wait until all parsers end
 
-    BOOST_LOG_TRIVIAL(info) << "Time to write file..";
-    containerToFileWithFilter(imageContainer);
+    BOOST_LOG_TRIVIAL(info) << "Complete";
 }

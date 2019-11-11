@@ -64,6 +64,17 @@ int programArguments(int argc, char **argv)
     return 0;
 }
 
+void writeListToFile(const Parser::LinkContainer &images, ThreadData &data)
+{
+    std::string result{};
+    for (const auto &image : images) {
+        result += image + "\n";
+    }
+
+    data.outputFile << result;
+    BOOST_LOG_TRIVIAL(debug) << "Written to file " << CrawlerData::output;
+}
+
 void afterParse(const Page &page, ThreadData &data)
 {
     boost::asio::post(data.downloaders,
@@ -94,6 +105,7 @@ void parse(const PageDownloaded &page, ThreadData &data)
         data.imageContainer.push(image);
     }
     BOOST_LOG_TRIVIAL(info) << "Found images on '" << page.target << "': " << amount;
+    writeListToFile(images, data);
 
     data.parserAmount--;
     if (page.depth == 0) {
@@ -138,18 +150,3 @@ void download(const Page &page, ThreadData &data)
     afterDownload(result, data);
 }
 
-void containerToFileWithFilter(ThreadData::ImageContainer &container)
-{
-    boost::unordered_set<std::string> uniqueCheck;
-
-    std::ofstream file{CrawlerData::output};
-    while (!container.empty()) {
-        std::string value = container.front();
-        auto pair = uniqueCheck.emplace(value);
-
-        if (pair.second) {
-            file << value << "\n";
-        }
-        container.pop();
-    }
-}
